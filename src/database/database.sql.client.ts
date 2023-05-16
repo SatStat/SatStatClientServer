@@ -1,39 +1,50 @@
 const { Sequelize } = require('sequelize');
+// const sequelizeConnection = new Sequelize(dbName, dbUser, dbPassword, {
+//   host: dbHost,
+//   dialect: dbDriver
+// })
 
 class DataBaseSqlClient {
-    static connection: any;
-    static someTable: any;
-    static async createSomeTable () {
-        this.someTable = this.connection.define('sometable', {
+    static database: typeof Sequelize;
+    static exampleTable: any;
+
+    static createExampleTable () {
+        const exampleTable = this.database.define('example', {
             id: {
               type: Sequelize.INTEGER,
               allowNull: false,
               primaryKey: true,
             },
         });
+        console.log(exampleTable);
+        this.exampleTable = exampleTable;
+        console.log('TABLE CREATED: ', this.exampleTable);
+    }
 
-        console.log('TABLE CREATED: ', this.someTable);
+    static async insetExampleTable () {
+        await this.database.sync();
+        const createExample = await this.exampleTable.create({
+            id: 1
+        })
+        console.log('EXEMPLE CREATED: ', createExample);
+    }
+
+    static async getExampleTable () {
+        await this.database.sync();
+        const getExample = await this.exampleTable.findAll();
+        console.log('GET REGISTER EXAMPLE:', getExample)
     }
 
     static async initDataBase () {
-        console.log('CHAMOU INIT');
         try {
-            const test = new Sequelize({
-                // database: 'sqlite_db',
-                // dialect: 'sqlite',
-                storage: `${__dirname}/database_test.sqlite`,
-                // storage: `./database_test.sqlite`,
-                // host: 'localhost',
-                // logging: false,
+            this.database = new Sequelize('dbName', 'dbUser', 'dbPassword', {
                 dialect: 'sqlite',
-                // storage: './database.sqlite',
-                logging: false
+                storage: `${__dirname}/sqlite.db`,
             });
-
-            await this.createSomeTable();
-
-            // return this.connection;
+            this.createExampleTable();
+            return this.database;
         } catch (e) {
+            console.log('ERRO', e)
             return { error: `Database connection error, ${e}`, statusCode: 500 }
         }
     }
