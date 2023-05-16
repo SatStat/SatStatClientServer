@@ -5,8 +5,8 @@ const { Sequelize } = require('sequelize');
 // })
 
 class DataBaseSqlClient {
-    static database: typeof Sequelize;
-    static exampleTable: any;
+    static database;
+    static exampleTable;
 
     static createExampleTable () {
         const exampleTable = this.database.define('example', {
