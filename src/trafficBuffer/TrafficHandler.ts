@@ -1,6 +1,6 @@
 // Importa os módulos 'net' e 'DataHandler' usando require
-const DataHandler = require('./DataHandler');
-import net = require('net');
+const { DataHandler } = require('./DataHandler');
+const { net } = require('net');
 
 // Server connection class
 class TrafficHandler extends DataHandler {
@@ -14,9 +14,9 @@ class TrafficHandler extends DataHandler {
     private static PORT_PROTOCOL_TRAFFIC = 50001;
     private static PORT_HOSTNAME_TRAFFIC = 50002;
 
-    private static network_client: net.Socket;
-    private static protocol_client: net.Socket;
-    private static hostname_client: net.Socket;
+    private static network_client: any;
+    private static protocol_client: any;
+    private static hostname_client: any;
 
     // Contrutor privado para evitar instanciação (single-ton)
     private constructor() {
@@ -113,7 +113,11 @@ class TrafficHandler extends DataHandler {
     }
 }
 
-// const localCaptureServer = TrafficHandler.getInstance();
-// localCaptureServer.connectToSockets();
-// localCaptureServer.receiveDataFromSockets();
-// localCaptureServer.closeConnection();
+// Equivalente ao if __name__ == '__main__' do Python 
+if (typeof require !== 'undefined' && require.main === module) {
+
+    const localCaptureServer = TrafficHandler.getInstance();
+    localCaptureServer.connectToSockets();
+    localCaptureServer.receiveDataFromSockets();
+    // localCaptureServer.closeConnection();
+}

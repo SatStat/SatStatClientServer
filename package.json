@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "start": "ts-node-dev ./server",
+    "start": "ts-node-dev ./src/server",
     "electron:dev": "electron . --trace-warnings",
     "rebuild": "electron-rebuild",
     "build-windows": "electron-builder --win --x64",
