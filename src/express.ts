@@ -15,3 +15,4 @@ server.use(express.json());
 server.use(express.static(__dirname + '/public'));
 require(__dirname + '\\routes.ts')(server);
 module.exports = server;
+export {}

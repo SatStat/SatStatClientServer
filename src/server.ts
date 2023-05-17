@@ -1,12 +1,12 @@
-const expressApp = require(`${__dirname}/express.ts`);
-const DB = require(`${__dirname}/database/database.sql.client.ts`)
+const server= require(`${__dirname}/express.ts`);
+const database = require(`${__dirname}/database/database.sql.client.ts`)
 const init = async () => {
-    expressApp.listen(3000, () => {
+    server.listen(3000, () => {
         console.log('HTTP SERVER - OK!');
-        DB.initDataBase();
-        DB.createExampleTable();
-        DB.insetExampleTable();
-        DB.getExampleTable();
+        database.initDataBase();
+        database.createExampleTable();
+        database.insetExampleTable();
+        database.getExampleTable();
     });
 }
 

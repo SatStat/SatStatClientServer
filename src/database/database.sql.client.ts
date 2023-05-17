@@ -51,3 +51,4 @@ class DataBaseSqlClient {
 }
 
 module.exports = DataBaseSqlClient
+export {};

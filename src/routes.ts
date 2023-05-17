@@ -13,3 +13,5 @@ module.exports = (application) => {
         }
     });
 }
+
+export {}
