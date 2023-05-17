@@ -1,6 +1,6 @@
 // Importa os módulos 'net' e 'DataHandler' usando require
-const { DataHandler } = require('./DataHandler');
-const { net } = require('net');
+const DataHandler = require('./DataHandler');
+const net = require('net');
 
 // Server connection class
 class TrafficHandler extends DataHandler {

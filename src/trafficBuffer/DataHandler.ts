@@ -123,4 +123,5 @@ class DataHandler {
 }
 
 // Exporta o módulo
-export default DataHandler;
+module.exports = DataHandler;
+export {};
