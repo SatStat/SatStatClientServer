@@ -1,9 +1,9 @@
 // Importa os módulos 'net' e 'DataHandler' usando require
-const DataHandler = require('./DataHandler');
+const ImportDataHandler = require('./DataHandler');
 const net = require('net');
 
 // Server connection class
-class TrafficHandler extends DataHandler {
+class TrafficHandler extends ImportDataHandler {
 
     // instância estática da classe TrafficHandler
     private static instance: TrafficHandler;
@@ -70,10 +70,12 @@ class TrafficHandler extends DataHandler {
     public receiveDataFromSockets(): void {
 
         TrafficHandler.network_client.on('data', (data) => {
-            // console.log('Dado recebido do network_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
-                this.appendNetworkTraffic(json_data);
+                json_data.forEach((element: any[]) => {
+                    const { download, upload, name } = element[1];
+                    this.appendNetworkTraffic({pid: element[0], upload, download, name, timestamp: Date.now()});
+                });
             }
         });
 
@@ -111,13 +113,13 @@ class TrafficHandler extends DataHandler {
             console.log('Conexão encerrada com o hostname_client.');
         });
     }
+
+    public startNetworkCapture() {
+        const localCaptureServer = TrafficHandler.getInstance();
+        localCaptureServer.connectToSockets();
+        localCaptureServer.receiveDataFromSockets();
+        // localCaptureServer.closeConnection();
+    }
 }
 
-// Equivalente ao if __name__ == '__main__' do Python 
-if (typeof require !== 'undefined' && require.main === module) {
-
-    const localCaptureServer = TrafficHandler.getInstance();
-    localCaptureServer.connectToSockets();
-    localCaptureServer.receiveDataFromSockets();
-    // localCaptureServer.closeConnection();
-}
+module.exports = TrafficHandler;

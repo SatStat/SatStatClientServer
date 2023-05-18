@@ -1,8 +1,6 @@
 
 // Data Handler Class
 class DataHandler {
-
-
     private static network_traffic: JSON[];
     private static protocol_traffic: JSON[];
     private static hostname_traffic: JSON[];
@@ -92,11 +90,9 @@ class DataHandler {
             DataHandler.hostname_traffic = [];
         }
         else {
-
             traffic_buffer.push(...DataHandler.network_traffic.splice(0, _request_size));
             traffic_buffer.push(...DataHandler.protocol_traffic.splice(0, _request_size));
             traffic_buffer.push(...DataHandler.hostname_traffic.splice(0, _request_size));
-            
         }
 
         // Returns the traffic buffer
@@ -105,7 +101,6 @@ class DataHandler {
 
     // Método getter para o buffer de network_traffic
     public seeNetworkTrafficBuffer(): JSON[] {
-
         return DataHandler.network_traffic;
     }
 
@@ -124,4 +119,3 @@ class DataHandler {
 
 // Exporta o módulo
 module.exports = DataHandler;
-export {};

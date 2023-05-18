@@ -1,12 +1,19 @@
-const server= require(`${__dirname}/express.ts`);
-const database = require(`${__dirname}/database/database.sql.client.ts`)
+const server = require(`${__dirname}/express.ts`);
+const database = require(`${__dirname}/database/database.sql.client.ts`);
+const NetworkData = require(`${__dirname}/trafficBuffer/TrafficHandler.ts`);
+
 const init = async () => {
     server.listen(3000, () => {
+        const requiredData = NetworkData.getInstance();
+        requiredData.startNetworkCapture();
         console.log('HTTP SERVER - OK!');
         database.initDataBase();
-        database.createExampleTable();
-        database.insetExampleTable();
-        database.getExampleTable();
+        database.getAllConsumptionData();
+        setInterval(() => {
+            const data = requiredData.seeNetworkTrafficBuffer();
+            console.log('dados: ', data);
+            database.insertMultipleConsumptionData(data);
+        }, 5000);
     });
 }
 
