@@ -1,11 +1,16 @@
+import e from "cors";
 
 // Data Handler Class
 class DataHandler {
 
-
+    // Membros estáticos da classe DataHandler
     private static network_traffic: JSON[];
     private static protocol_traffic: JSON[];
     private static hostname_traffic: JSON[];
+
+    private static dayTraffic: number[] = [0, 0];
+    private static nightTraffic: number[] = [0, 0];
+    private static recentTraffic: JSON;
 
     private static buffer_size: number = 1000;
     private static request_size: number = 100;
@@ -35,6 +40,7 @@ class DataHandler {
 
     // Método setter para append em network_traffic
     protected appendNetworkTraffic(data: JSON): void {
+        DataHandler.recentTraffic = data;
         DataHandler.network_traffic.push(data);
         this.networkTrafficManager();
     }
@@ -49,6 +55,28 @@ class DataHandler {
     protected appendHostnameTraffic(data: JSON): void {
         DataHandler.hostname_traffic.push(data);
         this.hostnameTrafficManager();
+
+        // Iterativamente soma todo o tráfego 
+        // se estiver dentro do intervalo de 7am - 23:59pm
+        const hour = new Date().getHours();
+        if (hour >= 7 && hour < 23) {
+
+            // TODO: COMPENSAR PELA ESCALA (BYTE, KILO, MEGA, GIGA)
+            for (const key in data) {
+                DataHandler.dayTraffic[0] += parseFloat(data[key]['download'].replace(/[A-Za-z]/g, ''));
+                DataHandler.dayTraffic[1] += parseFloat(data[key]['upload'].replace(/[A-Za-z]/g, ''));
+            }
+
+
+        }
+        else {
+            
+            // TODO: COMPENSAR PELA ESCALA (BYTE, KILO, MEGA, GIGA)
+            for (const key in data) {
+                DataHandler.nightTraffic[0] += parseFloat(data[key]['download'].replace(/[A-Za-z]/g, ''));
+                DataHandler.nightTraffic[1] += parseFloat(data[key]['upload'].replace(/[A-Za-z]/g, ''));
+            }
+        }
     }
 
     // Método para gerenciamento do tamanho do buffer
@@ -76,7 +104,7 @@ class DataHandler {
     }
 
     // Getter para o buffer de dados
-    public getTrafficBuffer(_request_size : number = DataHandler.request_size): JSON[] {
+    public getTrafficBuffer(_request_size: number = DataHandler.request_size): JSON[] {
 
         // Joins all traffic arrays into one json object
         const traffic_buffer: JSON[] = [];
@@ -86,26 +114,38 @@ class DataHandler {
             traffic_buffer.push(...DataHandler.network_traffic);
             traffic_buffer.push(...DataHandler.protocol_traffic);
             traffic_buffer.push(...DataHandler.hostname_traffic);
-        
+
             DataHandler.network_traffic = [];
             DataHandler.protocol_traffic = [];
             DataHandler.hostname_traffic = [];
         }
         else {
-
             traffic_buffer.push(...DataHandler.network_traffic.splice(0, _request_size));
             traffic_buffer.push(...DataHandler.protocol_traffic.splice(0, _request_size));
             traffic_buffer.push(...DataHandler.hostname_traffic.splice(0, _request_size));
-            
         }
 
         // Returns the traffic buffer
         return traffic_buffer;
     }
 
+    // Método getter para o tráfego total das aplicações (network) diurno
+    public getDayTraffic(): number[] {
+        return DataHandler.dayTraffic;
+    }
+
+    // Método getter para o tráfego total das aplicações (network) noturno
+    public getNightTraffic(): number[] {
+        return DataHandler.nightTraffic;
+    }
+
+    // Método getter para o tráfego recente das aplicações (network)
+    public getRecentTraffic(): JSON {
+        return DataHandler.recentTraffic;
+    }
+
     // Método getter para o buffer de network_traffic
     public seeNetworkTrafficBuffer(): JSON[] {
-
         return DataHandler.network_traffic;
     }
 
@@ -124,4 +164,3 @@ class DataHandler {
 
 // Exporta o módulo
 module.exports = DataHandler;
-export {};

@@ -1,9 +1,9 @@
 // Importa os módulos 'net' e 'DataHandler' usando require
-const DataHandler = require('./DataHandler');
+const ImportDataHandler = require('./DataHandler');
 const net = require('net');
 
 // Server connection class
-class TrafficHandler extends DataHandler {
+class TrafficHandler extends ImportDataHandler {
 
     // instância estática da classe TrafficHandler
     private static instance: TrafficHandler;
@@ -70,27 +70,41 @@ class TrafficHandler extends DataHandler {
     public receiveDataFromSockets(): void {
 
         TrafficHandler.network_client.on('data', (data) => {
-            // console.log('Dado recebido do network_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
-                this.appendNetworkTraffic(json_data);
+                var json_array = [];
+                json_data.forEach((element: any[]) => {
+                    const { download, upload, name } = element[1];
+                    json_array.push({ pid: element[0], upload, download, name, timestamp: Date.now() });
+                });
+                this.appendNetworkTraffic(json_array);
             }
         });
 
         TrafficHandler.protocol_client.on('data', (data) => {
-            // console.log('Dado recebido do protocol_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
-                this.appendProtocolTraffic(json_data);
+                var json_array = [];
+                json_data.forEach((element: any[]) => {
+                    const { total, download, upload } = element[1];
+                    json_array.push({ protocol: element[0], total, upload, download, timestamp: Date.now() });
+                });
+                this.appendProtocolTraffic(json_array);
             }
         });
 
         TrafficHandler.hostname_client.on('data', (data) => {
-            // console.log('Dado recebido do hostname_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
+            var json_array = [];
             if (json_data !== null) {
-                this.appendHostnameTraffic(json_data);
+                json_data.forEach((element: any[]) => {
+                    const { host, total, download, upload } = element[1];
+                    json_array.push({ id: element[0], host, total, upload, download, timestamp: Date.now() });
+                });
+                this.appendHostnameTraffic(json_array);
             }
+
+            console.log(json_array);
         });
 
         this.handleError();
@@ -111,13 +125,16 @@ class TrafficHandler extends DataHandler {
             console.log('Conexão encerrada com o hostname_client.');
         });
     }
+
+    // Método para iniciar a captura de tráfego
+    public static startNetworkCapture() {
+        const localCaptureServer = TrafficHandler.getInstance();
+        localCaptureServer.connectToSockets();
+        localCaptureServer.receiveDataFromSockets();
+        // localCaptureServer.closeConnection();
+    }
 }
 
-// Equivalente ao if __name__ == '__main__' do Python 
-if (typeof require !== 'undefined' && require.main === module) {
+module.exports = TrafficHandler;
 
-    const localCaptureServer = TrafficHandler.getInstance();
-    localCaptureServer.connectToSockets();
-    localCaptureServer.receiveDataFromSockets();
-    // localCaptureServer.closeConnection();
-}
+TrafficHandler.startNetworkCapture();

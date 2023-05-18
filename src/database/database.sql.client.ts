@@ -6,42 +6,55 @@ const { Sequelize } = require('sequelize');
 
 class DataBaseSqlClient {
     static database;
-    static exampleTable;
+    static consumptionHistoryTable;
 
-    static createExampleTable () {
-        const exampleTable = this.database.define('example', {
+    static createConsumptionHistoryTable () {
+        const newTable = this.database.define('consumptionHistory', {
             id: {
-              type: Sequelize.INTEGER,
+              type: Sequelize.STRING,
+              defaultValue: Sequelize.UUIDV4,
               allowNull: false,
               primaryKey: true,
             },
+            pid: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            download: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            upload: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
         });
-        console.log(exampleTable);
-        this.exampleTable = exampleTable;
-        console.log('TABLE CREATED: ', this.exampleTable);
+
+        this.consumptionHistoryTable = newTable;
     }
 
-    static async insetExampleTable () {
+    static async insertConsumptionData (data) {
         await this.database.sync();
-        const createExample = await this.exampleTable.create({
-            id: 1
-        })
-        console.log('EXEMPLE CREATED: ', createExample);
+        const insertedData = await this.consumptionHistoryTable.create({...data})
     }
 
-    static async getExampleTable () {
+    static async insertMultipleConsumptionData(data) {
         await this.database.sync();
-        const getExample = await this.exampleTable.findAll();
-        console.log('GET REGISTER EXAMPLE:', getExample)
+        const insertMultipleData = await this.consumptionHistoryTable.bulkCreate(data);
+    }
+
+    static async getAllConsumptionData () {
+        await this.database.sync();
+        const getExample = await this.consumptionHistoryTable.findAll();
     }
 
     static async initDataBase () {
         try {
             this.database = new Sequelize('dbName', 'dbUser', 'dbPassword', {
                 dialect: 'sqlite',
-                storage: `${__dirname}/sqlite.db`,
+                storage: `${__dirname}/db.sqlite`,
             });
-            this.createExampleTable();
+            this.createConsumptionHistoryTable();
             return this.database;
         } catch (e) {
             console.log('ERRO', e)
@@ -51,4 +64,3 @@ class DataBaseSqlClient {
 }
 
 module.exports = DataBaseSqlClient
-export {};
