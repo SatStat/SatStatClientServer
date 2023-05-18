@@ -72,27 +72,39 @@ class TrafficHandler extends ImportDataHandler {
         TrafficHandler.network_client.on('data', (data) => {
             const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
+                var json_array = [];
                 json_data.forEach((element: any[]) => {
                     const { download, upload, name } = element[1];
-                    this.appendNetworkTraffic({pid: element[0], upload, download, name, timestamp: Date.now()});
+                    json_array.push({ pid: element[0], upload, download, name, timestamp: Date.now() });
                 });
+                this.appendNetworkTraffic(json_array);
             }
         });
 
         TrafficHandler.protocol_client.on('data', (data) => {
-            // console.log('Dado recebido do protocol_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
-                this.appendProtocolTraffic(json_data);
+                var json_array = [];
+                json_data.forEach((element: any[]) => {
+                    const { total, download, upload } = element[1];
+                    json_array.push({ protocol: element[0], total, upload, download, timestamp: Date.now() });
+                });
+                this.appendProtocolTraffic(json_array);
             }
         });
 
         TrafficHandler.hostname_client.on('data', (data) => {
-            // console.log('Dado recebido do hostname_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+            const json_data = Object.entries(this.jsonify(data.toString()));
+            var json_array = [];
             if (json_data !== null) {
-                this.appendHostnameTraffic(json_data);
+                json_data.forEach((element: any[]) => {
+                    const { host, total, download, upload } = element[1];
+                    json_array.push({ id: element[0], host, total, upload, download, timestamp: Date.now() });
+                });
+                this.appendHostnameTraffic(json_array);
             }
+
+            console.log(json_array);
         });
 
         this.handleError();
@@ -114,7 +126,8 @@ class TrafficHandler extends ImportDataHandler {
         });
     }
 
-    public startNetworkCapture() {
+    // Método para iniciar a captura de tráfego
+    public static startNetworkCapture() {
         const localCaptureServer = TrafficHandler.getInstance();
         localCaptureServer.connectToSockets();
         localCaptureServer.receiveDataFromSockets();
@@ -123,3 +136,5 @@ class TrafficHandler extends ImportDataHandler {
 }
 
 module.exports = TrafficHandler;
+
+TrafficHandler.startNetworkCapture();
