@@ -53,15 +53,15 @@ class TrafficHandler extends ImportDataHandler {
     // Método para lidar com erros
     private handleError(): void {
 
-        TrafficHandler.network_client.on('error', (error) => {
+        TrafficHandler.network_client.on('error', (error: any) => {
             console.error('Erro recebido no network_client:', error);
         });
 
-        TrafficHandler.protocol_client.on('error', (error) => {
+        TrafficHandler.protocol_client.on('error', (error: any) => {
             console.error('Erro recebido no protocol_client:', error);
         });
 
-        TrafficHandler.hostname_client.on('error', (error) => {
+        TrafficHandler.hostname_client.on('error', (error: any) => {
             console.error('Erro recebido no hostname_client:', error);
         });
     }
@@ -69,7 +69,7 @@ class TrafficHandler extends ImportDataHandler {
     // Método para receber dados dos sockets
     public receiveDataFromSockets(): void {
 
-        TrafficHandler.network_client.on('data', (data) => {
+        TrafficHandler.network_client.on('data', (data: { toString: () => any; }) => {
             const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
                 json_data.forEach((element: any[]) => {
@@ -79,7 +79,7 @@ class TrafficHandler extends ImportDataHandler {
             }
         });
 
-        TrafficHandler.protocol_client.on('data', (data) => {
+        TrafficHandler.protocol_client.on('data', (data: { toString: () => any; }) => {
             // console.log('Dado recebido do protocol_client:', data.toString());
             const json_data = this.jsonify(data.toString());
             if (json_data !== null) {
@@ -87,7 +87,7 @@ class TrafficHandler extends ImportDataHandler {
             }
         });
 
-        TrafficHandler.hostname_client.on('data', (data) => {
+        TrafficHandler.hostname_client.on('data', (data: { toString: () => any; }) => {
             // console.log('Dado recebido do hostname_client:', data.toString());
             const json_data = this.jsonify(data.toString());
             if (json_data !== null) {
