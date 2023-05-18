@@ -1,9 +1,9 @@
 // Importa os módulos 'net' e 'DataHandler' usando require
-const ImportDataHandler = require('./DataHandler');
-const net = require('net');
+import { DataHandler } from "./DataHandler";
+import net from 'net';
 
 // Server connection class
-class TrafficHandler extends ImportDataHandler {
+export class TrafficHandler extends DataHandler {
 
     // instância estática da classe TrafficHandler
     private static instance: TrafficHandler;
@@ -53,15 +53,15 @@ class TrafficHandler extends ImportDataHandler {
     // Método para lidar com erros
     private handleError(): void {
 
-        TrafficHandler.network_client.on('error', (error: any) => {
+        TrafficHandler.network_client.on('error', (error) => {
             console.error('Erro recebido no network_client:', error);
         });
 
-        TrafficHandler.protocol_client.on('error', (error: any) => {
+        TrafficHandler.protocol_client.on('error', (error) => {
             console.error('Erro recebido no protocol_client:', error);
         });
 
-        TrafficHandler.hostname_client.on('error', (error: any) => {
+        TrafficHandler.hostname_client.on('error', (error) => {
             console.error('Erro recebido no hostname_client:', error);
         });
     }
@@ -69,30 +69,42 @@ class TrafficHandler extends ImportDataHandler {
     // Método para receber dados dos sockets
     public receiveDataFromSockets(): void {
 
-        TrafficHandler.network_client.on('data', (data: { toString: () => any; }) => {
+        TrafficHandler.network_client.on('data', (data) => {
             const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
+                var json_array = [];
                 json_data.forEach((element: any[]) => {
                     const { download, upload, name } = element[1];
-                    this.appendNetworkTraffic({pid: element[0], upload, download, name, timestamp: Date.now()});
+                    json_array.push({ pid: element[0], upload, download, name, timestamp: Date.now() });
                 });
+                this.appendNetworkTraffic(json_array);
             }
         });
 
-        TrafficHandler.protocol_client.on('data', (data: { toString: () => any; }) => {
-            // console.log('Dado recebido do protocol_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+        TrafficHandler.protocol_client.on('data', (data) => {
+            const json_data = Object.entries(this.jsonify(data.toString()));
             if (json_data !== null) {
-                this.appendProtocolTraffic(json_data);
+                var json_array: any = [];
+                json_data.forEach((element: any[]) => {
+                    const { total, download, upload } = element[1];
+                    json_array.push({ protocol: element[0], total, upload, download, timestamp: Date.now() });
+                });
+                this.appendProtocolTraffic(json_array);
             }
         });
 
-        TrafficHandler.hostname_client.on('data', (data: { toString: () => any; }) => {
-            // console.log('Dado recebido do hostname_client:', data.toString());
-            const json_data = this.jsonify(data.toString());
+        TrafficHandler.hostname_client.on('data', (data) => {
+            const json_data = Object.entries(this.jsonify(data.toString()));
+            var json_array: any = [];
             if (json_data !== null) {
-                this.appendHostnameTraffic(json_data);
+                json_data.forEach((element: any[]) => {
+                    const { host, total, download, upload } = element[1];
+                    json_array.push({ id: element[0], host, total, upload, download, timestamp: Date.now() });
+                });
+                this.appendHostnameTraffic(json_array);
             }
+
+            console.log(json_array);
         });
 
         this.handleError();
@@ -114,12 +126,11 @@ class TrafficHandler extends ImportDataHandler {
         });
     }
 
-    public startNetworkCapture() {
+    // Método para iniciar a captura de tráfego
+    public static startNetworkCapture() {
         const localCaptureServer = TrafficHandler.getInstance();
         localCaptureServer.connectToSockets();
         localCaptureServer.receiveDataFromSockets();
         // localCaptureServer.closeConnection();
     }
 }
-
-module.exports = TrafficHandler;

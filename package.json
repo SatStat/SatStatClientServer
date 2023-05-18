@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "homepage": ".",
+  "type": "commonjs",
   "main": "./build/electron/main.js",
   "scripts": {
     "start": "ts-node-dev ./src/server",
     "electron": "electron --trace-warnings .",
-    "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3001 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3001 && tsc -p electron && electron .\"",
+    "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3000 && tsc -p electron && electron .\"",
     "rebuild": "electron-rebuild",
     "build-windows": "electron-builder --win --x64",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:build": "yarn build && tsc -p electron && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -25,8 +28,7 @@
     "@types/electron-devtools-installer": "^2.2.2",
     "electron-devtools-installer": "^3.2.0",
     "electron-reload": "^2.0.0-alpha.1",
-    "sqlite3": "^5.1.1",
-    "typescript": "^5.0.4"
+    "sqlite3": "^5.1.1"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.2.13",
@@ -54,5 +56,17 @@
     "directories": {
       "buildResources": "assets"
     }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

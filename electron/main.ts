@@ -1,5 +1,8 @@
 import { app, BrowserWindow } from 'electron';
-let mainWindow;
+import * as path from 'path';
+import * as isDev from 'electron-is-dev';
+
+let mainWindow : BrowserWindow | null = null;;
 function createWindow() {
   mainWindow = new BrowserWindow({
     height: 600,
@@ -8,7 +11,17 @@ function createWindow() {
     },
     width: 800,
   });
-  mainWindow.loadURL('http://localhost:3001');
+
+  if (isDev) {
+    // 'node_modules/.bin/electronPath'
+    require('electron-reload')(__dirname, {
+      electron: path.join(__dirname, '..', '..', 'node_modules', '.bin', 'electron'),
+      forceHardReset: true,
+      hardResetMethod: 'exit'
+    });
+  }
+
+  mainWindow.loadURL('http://localhost:3000');
 }
 // wait the express initialize
 setTimeout(() => createWindow(), 5000);

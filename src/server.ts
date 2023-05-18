@@ -1,18 +1,15 @@
+import { TrafficHandler } from "./trafficBuffer/TrafficHandler";
 import server from "./express";
-const database = require(`${__dirname}/database/database.sql.client.ts`);
-const NetworkData = require(`${__dirname}/trafficBuffer/TrafficHandler.ts`);
+import { DataBaseSqlClient } from "./database/database.sql.client";
 
 const init = async () => {
-    server.listen(3001, () => {
-        const requiredData = NetworkData.getInstance();
-        requiredData.startNetworkCapture();
+    server.listen(3000, () => {
+        TrafficHandler.startNetworkCapture();
         console.log('HTTP SERVER - OK!');
-        database.initDataBase();
-        database.getAllConsumptionData();
+        DataBaseSqlClient.initDataBase();
+        DataBaseSqlClient.getAllConsumptionData();
         setInterval(() => {
-            const data = requiredData.seeNetworkTrafficBuffer();
-            console.log('dados: ', data);
-            database.insertMultipleConsumptionData(data);
+            console.log('HERE!')
         }, 5000);
     });
 }

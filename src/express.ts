@@ -1,6 +1,6 @@
-import express from 'express';
-import cors from 'cors'
-import routes from "./routes";
+import express from "express";
+import cors from "cors";
+import {routes} from "./routes";
 
 const server = express();
 
@@ -10,7 +10,7 @@ server.use(cors({
 }));
 
 server.use(express.json());
-// serverExpress.use('/', routes);
+// server.use('/', routes);
 server.use(express.static(__dirname + '/public'));
 routes(server);
 
