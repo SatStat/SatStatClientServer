@@ -2,11 +2,12 @@
   "name": "satstatclientserver",
   "version": "1.0.0",
   "description": "",
-  "type": "commonjs",
-  "main": "main.ts",
+  "homepage": ".",
+  "main": "./build/electron/main.js",
   "scripts": {
     "start": "ts-node-dev ./src/server",
-    "electron:dev": "electron . --trace-warnings",
+    "electron": "electron --trace-warnings .",
+    "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3001 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3001 && tsc -p electron && electron .\"",
     "rebuild": "electron-rebuild",
     "build-windows": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,7 +21,12 @@
     "net": "^1.0.2",
     "sequelize": "6.21.4",
     "socket.io": "^4.6.1",
-    "sqlite3": "^5.1.1"
+    "electron-is-dev": "^2.0.0",
+    "@types/electron-devtools-installer": "^2.2.2",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-reload": "^2.0.0-alpha.1",
+    "sqlite3": "^5.1.1",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.2.13",
@@ -36,6 +42,17 @@
     "electron-packager": "^17.1.1",
     "electron-rebuild": "^3.2.9",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.4"
+    "concurrently": "^8.0.1",
+    "cross-env": "^7.0.3",
+    "wait-on": "^7.0.1"
+  },
+  "build": {
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }

@@ -1,16 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const routes = require(`${__dirname}/routes.ts`);
+import express from 'express';
+import cors from 'cors'
+import routes from "./routes";
 
-const serverExpress = express();
+const server = express();
 
-serverExpress.use(cors({
+server.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
 }));
 
-serverExpress.use(express.json());
+server.use(express.json());
 // serverExpress.use('/', routes);
-serverExpress.use(express.static(__dirname + '/public'));
-require(__dirname + '\\routes.ts')(serverExpress);
-module.exports = serverExpress;
+server.use(express.static(__dirname + '/public'));
+routes(server);
+
+export default server;

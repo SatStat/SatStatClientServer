@@ -1,11 +1,11 @@
 // const Router = require('express');
 const path = require('path');
 
-module.exports = (application) => {
-    application.get('/', async (req, res) => {
+const routes = (app: any) => {
+    app.get('/', async (req: any, res: any) => {
         try {
-            res.sendFile(path.join(__dirname, '/src/public', 'index.html'));
-        } catch (err) {
+            res.sendFile(path.join('./src/public', 'index.html'));
+        } catch (err: any) {
             if (err.syscall === 'lstat') {
                 return res.status(404).send()
             }
@@ -13,3 +13,5 @@ module.exports = (application) => {
         }
     });
 }
+
+export default routes;

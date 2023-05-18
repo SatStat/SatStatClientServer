@@ -1,9 +1,9 @@
-const server = require(`${__dirname}/express.ts`);
+import server from "./express";
 const database = require(`${__dirname}/database/database.sql.client.ts`);
 const NetworkData = require(`${__dirname}/trafficBuffer/TrafficHandler.ts`);
 
 const init = async () => {
-    server.listen(3000, () => {
+    server.listen(3001, () => {
         const requiredData = NetworkData.getInstance();
         requiredData.startNetworkCapture();
         console.log('HTTP SERVER - OK!');

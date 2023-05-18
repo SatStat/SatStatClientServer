@@ -5,8 +5,8 @@ const { Sequelize } = require('sequelize');
 // })
 
 class DataBaseSqlClient {
-    static database;
-    static consumptionHistoryTable;
+    static database: { define: (arg0: string, arg1: { id: { type: any; defaultValue: any; allowNull: boolean; primaryKey: boolean; }; pid: { type: any; allowNull: boolean; }; download: { type: any; allowNull: boolean; }; upload: { type: any; allowNull: boolean; }; }) => any; sync: () => any; };
+    static consumptionHistoryTable: { create: (arg0: any) => any; bulkCreate: (arg0: any) => any; findAll: () => any; };
 
     static createConsumptionHistoryTable () {
         const newTable = this.database.define('consumptionHistory', {
@@ -33,12 +33,12 @@ class DataBaseSqlClient {
         this.consumptionHistoryTable = newTable;
     }
 
-    static async insertConsumptionData (data) {
+    static async insertConsumptionData (data: any) {
         await this.database.sync();
         const insertedData = await this.consumptionHistoryTable.create({...data})
     }
 
-    static async insertMultipleConsumptionData(data) {
+    static async insertMultipleConsumptionData(data: any) {
         await this.database.sync();
         const insertMultipleData = await this.consumptionHistoryTable.bulkCreate(data);
     }
